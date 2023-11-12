@@ -1,0 +1,7 @@
+
+
+POST  http://localhost:3001/todos/new
+
+content-type: application/json
+{
+"todo": "qweq",}

@@ -2,11 +2,13 @@ const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
 const app = express()
+const bodyParser = require("body-parser")
 require("dotenv").config()
 const Todo = require("./model/Todo")
 
 app.use(express.json())
 app.use(cors())
+app.use(bodyParser.json())
 
 const dbUrl = process.env.DATABASE_URL
 mongoose.connect(dbUrl)
@@ -22,9 +24,19 @@ app.get("/todos", async (req, res) => {
 })
 
 app.post("/todos/new", async (req, res) => {
-	const todo = new Todo({ text: req.body.text })
-	todo.save()
-	res.json(todo)
+	try {
+		const todoData = {
+			todo: req.body.todo,
+			// Diğer alanları da ekleme veya güncelleme yapabilirsiniz.
+		}
+
+		const newTodo = new Todo(todoData)
+		const savedTodo = await newTodo.save()
+
+		res.json(savedTodo)
+	} catch (error) {
+		res.status(500).json({ error: error.message })
+	}
 })
 app.delete("/todos/delete/:id", async (req, res) => {
 	const result = new Todo.findById(req.params.id)
